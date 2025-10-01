@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "https://voting-app-server-d769.onrender.com/api",
 });
 
 // attach token automatically
@@ -12,3 +12,4 @@ API.interceptors.request.use((config) => {
 });
 
 export default API;
+
