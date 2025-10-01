@@ -1,8 +1,9 @@
+// AuthContext.jsx
 import { createContext, useState, useEffect } from "react";
 
 export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -10,10 +11,10 @@ export const AuthProvider = ({ children }) => {
     if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
 
-  const login = (data) => {
-    localStorage.setItem("user", JSON.stringify(data));
-    localStorage.setItem("token", data.token);
-    setUser(data);
+  const login = (userData, token) => {
+    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("token", token);
+    setUser(userData);
   };
 
   const logout = () => {
@@ -27,4 +28,4 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};
+}

@@ -1,127 +1,76 @@
-import { useState, useEffect } from "react";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 
 export default function Home() {
-  const slides = [
-    {
-      id: 1,
-      title: "Organize Your Tasks",
-      subtitle: "Stay productive and never miss a task",
-      image: "https://source.unsplash.com/1200x500/?productivity,work",
-    },
-    {
-      id: 2,
-      title: "Track Your Progress",
-      subtitle: "Mark tasks completed and see your growth",
-      image: "https://source.unsplash.com/1200x500/?success,goals",
-    },
-    {
-      id: 3,
-      title: "Achieve More",
-      subtitle: "Prioritize, plan and accomplish daily goals",
-      image: "https://source.unsplash.com/1200x500/?achievement,focus",
-    },
-  ];
-
-  const [current, setCurrent] = useState(0);
-
-  // Auto-slider
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [slides.length]);
+  const { user } = useContext(AuthContext);
 
   return (
-    <div className="min-h-screen flex flex-col font-sans">
-      {/* Header / Slider */}
-      <header className="relative h-96 w-full overflow-hidden">
-        {slides.map((slide, index) => (
-          <div
-            key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === current ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            <img
-              src={slide.image}
-              alt={slide.title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-black bg-opacity-30 flex flex-col justify-center items-center text-center text-white px-4">
-              <h1 className="text-4xl md:text-5xl font-bold mb-2">{slide.title}</h1>
-              <p className="text-xl md:text-2xl">{slide.subtitle}</p>
-            </div>
+    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-purple-100 flex flex-col items-center">
+      {/* Hero Section */}
+      <section className="text-center py-16 px-6 max-w-3xl">
+        <h1 className="text-5xl font-extrabold text-purple-700 mb-4">
+          Welcome to Voting App
+        </h1>
+        <p className="text-lg text-gray-700 mb-6">
+          Create polls, vote instantly, and see real-time results. 
+          Join the community and make your opinion count!
+        </p>
+
+        {user ? (
+          <div className="space-x-4">
+            <Link
+              to="/vote"
+              className="bg-purple-600 text-white px-6 py-3 rounded-lg shadow hover:bg-purple-700 transition"
+            >
+              Start Voting
+            </Link>
+            <Link
+              to="/dashboard"
+              className="bg-white text-purple-600 px-6 py-3 rounded-lg border hover:bg-gray-100 transition"
+            >
+              Dashboard
+            </Link>
           </div>
-        ))}
-      </header>
+        ) : (
+          <div className="space-x-4">
+            <Link
+              to="/register"
+              className="bg-green-600 text-white px-6 py-3 rounded-lg shadow hover:bg-green-700 transition"
+            >
+              Register
+            </Link>
+            <Link
+              to="/login"
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700 transition"
+            >
+              Login
+            </Link>
+          </div>
+        )}
+      </section>
 
       {/* Features Section */}
-      <section className="flex-1 bg-gray-50 py-20 px-4">
-        <h2 className="text-3xl font-bold text-center mb-12">Why Choose TodoMaster?</h2>
-        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10 text-center">
-          <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition duration-500">
-            <div className="text-5xl mb-4">📝</div>
-            <h3 className="text-2xl font-bold mb-3 text-blue-600">Organize Tasks</h3>
-            <p className="text-gray-600">
-              Quickly add your tasks and keep your day structured. No more forgotten chores or deadlines!
-            </p>
-          </div>
-          <div className="bg-gradient-to-tr from-green-100 to-green-200 p-8 rounded-2xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition duration-500">
-            <div className="text-5xl mb-4">✅</div>
-            <h3 className="text-2xl font-bold mb-3 text-green-700">Track Progress</h3>
-            <p className="text-gray-700">
-              Mark tasks as completed and monitor your productivity visually with simple indicators.
-            </p>
-          </div>
-          <div className="bg-gradient-to-tr from-yellow-100 to-yellow-200 p-8 rounded-2xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition duration-500">
-            <div className="text-5xl mb-4">🏆</div>
-            <h3 className="text-2xl font-bold mb-3 text-yellow-700">Achieve Goals</h3>
-            <p className="text-gray-700">
-              Focus on daily, weekly, and monthly goals. Turn your plans into achievements effortlessly!
-            </p>
-          </div>
+      <section className="grid md:grid-cols-3 gap-8 px-6 py-12 max-w-5xl">
+        <div className="bg-white shadow-lg rounded-2xl p-6 text-center">
+          <h3 className="text-xl font-bold text-purple-600 mb-2">Create Polls</h3>
+          <p className="text-gray-600">
+            Make your own polls in seconds with multiple options for others to vote on.
+          </p>
+        </div>
+        <div className="bg-white shadow-lg rounded-2xl p-6 text-center">
+          <h3 className="text-xl font-bold text-purple-600 mb-2">Vote Instantly</h3>
+          <p className="text-gray-600">
+            Participate in polls and have your opinion counted in real-time.
+          </p>
+        </div>
+        <div className="bg-white shadow-lg rounded-2xl p-6 text-center">
+          <h3 className="text-xl font-bold text-purple-600 mb-2">View Results</h3>
+          <p className="text-gray-600">
+            See live charts and results as people cast their votes.
+          </p>
         </div>
       </section>
-
-      {/* Additional Content Section */}
-      <section className="bg-white py-20 px-4">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-          <img
-            src="https://media.istockphoto.com/id/1193476717/photo/male-hands-making-a-to-do-list-in-a-notebook-over-an-office-desk.jpg?s=612x612&w=0&k=20&c=8DNkIq4K2W-AmeWes4436EDbjRwltEOUt3FIjY4ubVw="
-            alt="Plan"
-            className="rounded-xl shadow-lg"
-          />
-          <div>
-            <h2 className="text-3xl font-bold mb-4">Plan Smarter</h2>
-            <p className="text-gray-700 mb-4">
-              With TodoMaster, plan your tasks efficiently and get reminders so you stay on track.
-            </p>
-            <p className="text-gray-700">
-              Organize your day into sections, prioritize important tasks, and enjoy a stress-free workflow.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Call To Action Section */}
-      <section className="bg-gradient-to-r from-blue-500 to-purple-600 py-20 px-4 text-center text-white">
-        <h2 className="text-3xl font-bold mb-4">Ready to Boost Your Productivity?</h2>
-        <p className="mb-8 text-lg">Sign up now and start managing your tasks like a pro!</p>
-        <Link to="/todos"
-     
-          className="bg-white text-blue-600 px-6 py-3 rounded-full font-semibold shadow-lg hover:bg-gray-100 transition"
-        >
-          Get Started
-        </Link>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white text-center p-6">
-        <p>&copy; {new Date().getFullYear()} TodoMaster. All rights reserved.</p>
-        <p className="text-gray-400 mt-2">Simple. Efficient. Productive.</p>
-      </footer>
     </div>
   );
 }

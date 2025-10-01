@@ -1,53 +1,90 @@
 import { useEffect, useState } from "react";
 import API from "../api/axios";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { Bar, Pie } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  Tooltip,
+  Legend
+} from "chart.js";
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend);
 
 export default function Dashboard() {
-  const [stats, setStats] = useState({ total: 0, completed: 0, pending: 0, monthly: [] });
-
-  const fetchStats = async () => {
-    try {
-      const res = await API.get("/todos/stats/summary");
-      setStats(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  const [stats, setStats] = useState(null);
 
   useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await API.get("/votes/stats", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setStats(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
     fetchStats();
   }, []);
 
-  return (
-    <div className="max-w-4xl mx-auto mt-10">
-      <h2 className="text-xl font-bold mb-4">Dashboard</h2>
+  if (!stats) return <p>Loading...</p>;
 
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="p-4 bg-blue-100 rounded text-center">
-          <h3 className="font-semibold">Total Tasks</h3>
-          <p className="text-2xl">{stats.total}</p>
-        </div>
-        <div className="p-4 bg-green-100 rounded text-center">
-          <h3 className="font-semibold">Completed</h3>
-          <p className="text-2xl">{stats.completed}</p>
-        </div>
-        <div className="p-4 bg-yellow-100 rounded text-center">
-          <h3 className="font-semibold">Pending</h3>
-          <p className="text-2xl">{stats.pending}</p>
-        </div>
+  const genderData = {
+    labels: stats.genderStats.map(g => g._id),
+    datasets: [
+      {
+        label: "Votes by Gender",
+        data: stats.genderStats.map(g => g.count),
+        backgroundColor: ["#4F46E5", "#EC4899", "#F59E0B"]
+      }
+    ]
+  };
+
+  const candidateData = {
+    labels: stats.candidateStats.map(c => c._id),
+    datasets: [
+      {
+        label: "Votes per Candidate",
+        data: stats.candidateStats.map(c => c.count),
+        backgroundColor: ["#3B82F6", "#10B981", "#F97316"]
+      }
+    ]
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto p-5 space-y-6">
+      <h2 className="text-2xl font-bold mb-4">Voting Dashboard</h2>
+
+      <div className="p-4 border rounded shadow">
+        <h3 className="text-xl font-semibold mb-2">Total Votes</h3>
+        <p className="text-3xl font-bold">{stats.totalVotes}</p>
       </div>
 
-      <h3 className="mb-2 font-semibold">Tasks per Month</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={stats.monthly.map((m) => ({ month: m._id, completed: m.completed, pending: m.pending }))}>
-          <XAxis dataKey="month" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="completed" fill="#22c55e" />
-          <Bar dataKey="pending" fill="#facc15" />
-        </BarChart>
-      </ResponsiveContainer>
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+        {/* {stats.genderStats.length > 0 && (
+          <div className="p-4 border rounded shadow">
+            <h3 className="text-xl font-semibold mb-2">Votes by Gender</h3>
+            <Pie data={genderData} />
+          </div>
+        )} */}
+
+        {stats.candidateStats.length > 0 && (
+          <div className="p-4 border rounded shadow">
+            <h3 className="text-xl font-semibold mb-2">Votes per Candidate</h3>
+            <Bar key={JSON.stringify(candidateData)} data={candidateData} />
+          </div>
+        )}
+      </div>
+
+      <div className="p-4 border rounded shadow">
+        <h3 className="text-xl font-semibold mb-2">Majority Candidate</h3>
+        <p className="text-2xl font-bold">{stats.majority?._id || "No votes yet"}</p>
+        <p className="text-lg">{stats.majority ? `${stats.majority.count} votes` : ""}</p>
+      </div>
     </div>
   );
 }
