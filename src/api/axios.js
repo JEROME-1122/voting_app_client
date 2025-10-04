@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000/api", // change to your backend
+  baseURL: "https://voting-app-server-d769.onrender.com/api", // change to your backend
 });
 
 // request interceptor to attach token
@@ -17,3 +17,4 @@ API.interceptors.request.use(
 );
 
 export default API;
+
