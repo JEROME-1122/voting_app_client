@@ -1,15 +1,19 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://voting-app-server-d769.onrender.com/api",
+  baseURL: "http://localhost:5000/api", // change to your backend
 });
 
-// attach token automatically
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+// request interceptor to attach token
+API.interceptors.request.use(
+  (config) => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser?.token) {
+      config.headers.Authorization = `Bearer ${storedUser.token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 export default API;
-
